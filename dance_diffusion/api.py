@@ -10,6 +10,9 @@ from .base.inference import InferenceBase
 
 from .dd.model import DDModelWrapper
 from .dd.inference import DDInference
+
+from .ldd.model import LDDModelWrapper
+from .ldd.inference import LDDInference
     
 class RequestType(str, enum.Enum):
     Generation = 'Generation'
@@ -102,7 +105,8 @@ class RequestHandler:
 
     def load_model(self, model_type, model_path, chunk_size, sample_rate):
         wrappers_by_model_type = {
-            ModelType.DD: [DDModelWrapper, DDInference]
+            ModelType.DD: [DDModelWrapper, DDInference],
+            ModelType.LDD: [LDDModelWrapper, LDDInference]
         }
         
         [Wrapper, Inference] = wrappers_by_model_type.get(model_type, [None, None])
@@ -129,7 +133,7 @@ class RequestHandler:
     def handle_generation(self, request: Request, callback: Callable) -> Response:
         kwargs = request.kwargs.copy()
         
-        if request.model_type in [ModelType.DD]:
+        if request.model_type in [ModelType.DD, ModelType.LDD]:
             return self.inference.generate(
                 callback=callback,
                 scheduler=kwargs['scheduler_type'],
@@ -146,7 +150,7 @@ class RequestHandler:
             audio_source = kwargs['audio_source'][None,:,:]
         )
         
-        if request.model_type in [ModelType.DD]:
+        if request.model_type in [ModelType.DD, ModelType.LDD]:
             return self.inference.generate_variation(
                 callback=callback,
                 scheduler=kwargs['scheduler_type'],
@@ -164,7 +168,7 @@ class RequestHandler:
             audio_target = kwargs['audio_target'][None,:,:]
         )
         
-        if request.model_type in [ModelType.DD]:
+        if request.model_type in [ModelType.DD, ModelType.LDD]:
             return self.inference.generate_interpolation(
                 callback=callback,
                 scheduler=kwargs['scheduler_type'],
@@ -181,7 +185,7 @@ class RequestHandler:
             audio_source = kwargs['audio_source'][None,:,:]
         )
         
-        if request.model_type == [ModelType.DD]:
+        if request.model_type == [ModelType.DD, ModelType.LDD]:
             return self.inference.generate_inpainting(
                 callback=callback,
                 scheduler=kwargs['scheduler_type'],
@@ -198,7 +202,7 @@ class RequestHandler:
             audio_source = kwargs['audio_source'][None,:,:]
         )
         
-        if request.model_type in [ModelType.DD]:
+        if request.model_type in [ModelType.DD, ModelType.LDD]:
             return self.inference.generate_extension(
                 callback=callback,
                 scheduler=kwargs['scheduler_type'],
