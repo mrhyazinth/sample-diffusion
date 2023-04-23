@@ -1,9 +1,16 @@
 import torch
 from torch import nn
 from torch.nn import functional as F
+from functools import partial
+
 
 from dance_diffusion.dd.blocks import SkipBlock, FourierFeatures, SelfAttention1d, ResConvBlock, Downsample1d, Upsample1d
+from dance_diffusion.dd.utils import append_dims
+
 from .autoencoder import AudioAutoencoder
+
+def expand_to_planes(input, shape):
+    return input[..., None].repeat([1, 1, shape[2]])
 
 class DiffusionUnet1D(nn.Module):
     def __init__(
@@ -33,7 +40,7 @@ class DiffusionUnet1D(nn.Module):
                 c_prev = channels[i - 2]
                 add_attn = i >= attn_layer and n_attn_layers > 0
                 block = SkipBlock(
-                    Downsample1d_2(c_prev, c_prev, stride) if learned_resample else Downsample1d("cubic"),
+                    Downsample1d("cubic"),#Downsample1d_2(c_prev, c_prev, stride) if learned_resample else 
                     conv_block(c_prev, c, c),
                     SelfAttention1d(
                         c, c // 32) if add_attn else nn.Identity(),
@@ -53,7 +60,7 @@ class DiffusionUnet1D(nn.Module):
                     conv_block(c, c, c_prev),
                     SelfAttention1d(c_prev, c_prev //
                                     32) if add_attn else nn.Identity(),
-                    Upsample1d_2(c_prev, c_prev, stride) if learned_resample else Upsample1d(kernel="cubic")
+                    Upsample1d(kernel="cubic")#Upsample1d_2(c_prev, c_prev, stride) if learned_resample else 
                     # nn.Upsample(scale_factor=2, mode='linear',
                     #             align_corners=False),
                 )
@@ -106,12 +113,6 @@ class LatentAudioDiffusion(nn.Module):
         })
 
         self.autoencoder = autoencoder
-
-    def encode(self, reals):
-        return self.autoencoder.encode(reals)
-
-    def decode(self, latents):
-        return self.autoencoder.decode(latents)
 
     def forward(self, x, t, **extra_args):
         return self.diffusion(x, t, **extra_args)

@@ -62,24 +62,29 @@ class LDDModelWrapper(ModelWrapperBase):
         self.sample_rate = model_info.get('sample_rate')if not sample_rate else sample_rate
         
         autoencoder_config = model_config.get('autoencoder_config')
-        latent_diffusion_config = model_config.get('autoencoder_config')
+        latent_diffusion_config = model_config.get('latent_diffusion_config')
 
         
         autoencoder = AudioAutoencoder(**autoencoder_config).requires_grad_(False)
         self.module = LatentAudioDiffusion(autoencoder, **latent_diffusion_config)
         
-        # self.module.autoencoder.load_state_dict( #?
-        #     file["state_dict"], 
-        #     strict=False
-        # )
+        #for item in self.module.state_dict():
+        #    print(item)
         
         self.module.load_state_dict( #?
             file["state_dict"], 
             strict=False
         )
+        # self.module.autoencoder.load_state_dict( #?
+        #     file["state_dict"], 
+        #     strict=False
+        # )
+        
+        
         self.module.eval().requires_grad_(False)
-                
+        
         self.latent_dim = self.module.autoencoder.latent_dim
+        self.downsampling_ratio = self.module.autoencoder.downsampling_ratio
         
         self.ae_encoder = self.module.autoencoder.encoder if (optimize_memory_use) else self.module.autoencoder.encoder.to(device_accelerator)
         self.ae_decoder = self.module.autoencoder.decoder if (optimize_memory_use) else self.module.autoencoder.decoder.to(device_accelerator)

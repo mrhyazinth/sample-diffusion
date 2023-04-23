@@ -10,7 +10,7 @@
     "tame": true,
 
     "model_type": "LDD",
-    "model": "models/LDD/model.ckpt",
+    "model": "models/LDD/model.pruned.ckpt",
 
     "sample_rate": 44100,
     "chunk_size": 524288,
