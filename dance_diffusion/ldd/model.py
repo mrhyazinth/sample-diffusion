@@ -63,23 +63,14 @@ class LDDModelWrapper(ModelWrapperBase):
         
         autoencoder_config = model_config.get('autoencoder_config')
         latent_diffusion_config = model_config.get('latent_diffusion_config')
-
         
         autoencoder = AudioAutoencoder(**autoencoder_config).requires_grad_(False)
         self.module = LatentAudioDiffusion(autoencoder, **latent_diffusion_config)
         
-        #for item in self.module.state_dict():
-        #    print(item)
-        
-        self.module.load_state_dict( #?
+        self.module.load_state_dict(
             file["state_dict"], 
             strict=False
         )
-        # self.module.autoencoder.load_state_dict( #?
-        #     file["state_dict"], 
-        #     strict=False
-        # )
-        
         
         self.module.eval().requires_grad_(False)
         
