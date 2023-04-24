@@ -27,15 +27,11 @@ class Request:
         request_type: RequestType,
         model_path: str,
         model_type: ModelType,
-        model_chunk_size: int,
-        model_sample_rate: int,
         **kwargs
     ):
         self.request_type = request_type
         self.model_path = model_path
         self.model_type = model_type
-        self.model_chunk_size = model_chunk_size
-        self.model_sample_rate = model_sample_rate
         self.kwargs = kwargs
 
 
@@ -73,17 +69,15 @@ class RequestHandler:
         if (self.model_wrapper == None):
             self.load_model(
                 request.model_type, 
-                request.model_path, 
-                request.model_chunk_size,
-                request.model_sample_rate
+                request.model_path,
+                request.kwargs
             )
         elif (request.model_path != self.model_wrapper.path):
             del self.model_wrapper, self.inference
             self.load_model(
                 request.model_type, 
-                request.model_path, 
-                request.model_chunk_size,
-                request.model_sample_rate
+                request.model_path,
+                request.kwargs
             )
         
         handlers_by_request_type = {
@@ -103,7 +97,7 @@ class RequestHandler:
             
         return Response(tensor_result)
 
-    def load_model(self, model_type, model_path, chunk_size, sample_rate):
+    def load_model(self, model_type, model_path, kwargs):
         wrappers_by_model_type = {
             ModelType.DD: [DDModelWrapper, DDInference],
             ModelType.LDD: [LDDModelWrapper, LDDInference]
@@ -117,8 +111,7 @@ class RequestHandler:
                 model_path,
                 self.device_accelerator,
                 self.optimize_memory_use,
-                chunk_size,
-                sample_rate
+                kwargs
             )
             self.inference = Inference(
                 self.device_accelerator,

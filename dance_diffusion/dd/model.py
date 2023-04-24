@@ -25,9 +25,10 @@ class DDModelWrapper(ModelWrapperBase):
         self,
         path:str,
         device_accelerator:torch.device,
-        optimize_memory_use:bool=False,
-        chunk_size:int=None,
-        sample_rate:int=None
+        optimize_memory_use:bool,
+        # chunk_size:int=None,
+        # sample_rate:int=None
+        kwargs: dict
     ):
         
         default_model_config = dict(
@@ -56,13 +57,13 @@ class DDModelWrapper(ModelWrapperBase):
         diffusion_config = model_config.get('diffusion_config')
 
         self.path = path
-        self.chunk_size =  model_info.get('native_chunk_size')if not chunk_size else chunk_size
-        self.sample_rate = model_info.get('sample_rate')if not sample_rate else sample_rate
+        self.chunk_size =  model_info.get('native_chunk_size')if not kwargs.get('model_chunk_size', None) else kwargs.get('model_chunk_size', None)
+        self.sample_rate = model_info.get('sample_rate')if not kwargs.get('model_sample_rate', None) else kwargs.get('model_sample_rate', None)
         
         self.module = DanceDiffusionInference(
             n_attn_layers=diffusion_config.get('n_attn_layers'),
-            sample_size=chunk_size,
-            sample_rate=sample_rate,
+            sample_size=self.chunk_size,
+            sample_rate=self.sample_rate,
             latent_dim=0,
         )
         
