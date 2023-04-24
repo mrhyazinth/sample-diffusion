@@ -20,9 +20,8 @@ class LDDModelWrapper(ModelWrapperBase):
         self,
         path:str,
         device_accelerator:torch.device,
-        optimize_memory_use:bool=False,
-        chunk_size:int=None,
-        sample_rate:int=None
+        optimize_memory_use:bool,
+        kwargs
     ):    
         default_model_config = dict(
             version = [0, 0, 1],
@@ -58,12 +57,12 @@ class LDDModelWrapper(ModelWrapperBase):
         model_info = model_config.get('model_info')
         
         self.path = path
-        self.native_chunk_size =  model_info.get('native_chunk_size')if not chunk_size else chunk_size
-        self.sample_rate = model_info.get('sample_rate')if not sample_rate else sample_rate
+        self.chunk_size =  model_info.get('native_chunk_size')if not kwargs.get('model_chunk_size', None) else kwargs.get('model_chunk_size', None)
+        self.sample_rate = model_info.get('sample_rate')if not kwargs.get('model_sample_rate', None) else kwargs.get('model_sample_rate', None)
         
         autoencoder_config = model_config.get('autoencoder_config')
         latent_diffusion_config = model_config.get('latent_diffusion_config')
-        
+
         autoencoder = AudioAutoencoder(**autoencoder_config).requires_grad_(False)
         self.module = LatentAudioDiffusion(autoencoder, **latent_diffusion_config)
         

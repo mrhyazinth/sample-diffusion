@@ -42,10 +42,10 @@ class LDDInference(InferenceBase):
         step_list = scheduler.get_step_list(steps, self.device_accelerator.type, **scheduler_args)#step_list = step_list[:-1] if sampler in [SamplerType.V_PRK, SamplerType.V_PLMS, SamplerType.V_PIE, SamplerType.V_PLMS2, SamplerType.V_IPLMS] else step_list
         
         if SamplerType.is_v_sampler(sampler):
-            x_T = torch.randn([batch_size, self.model.latent_dim, self.model.native_chunk_size // self.model.downsampling_ratio], generator=self.generator, device=self.device_accelerator)
+            x_T = torch.randn([batch_size, self.model.latent_dim, self.model.chunk_size // self.model.downsampling_ratio], generator=self.generator, device=self.device_accelerator)
             model = self.model.diffusion
         else:
-            x_T = step_list[0] * torch.randn([batch_size, self.model.latent_dim, self.model.native_chunk_size // self.model.downsampling_ratio], generator=self.generator, device=self.device_accelerator)
+            x_T = step_list[0] * torch.randn([batch_size, self.model.latent_dim, self.model.chunk_size // self.model.downsampling_ratio], generator=self.generator, device=self.device_accelerator)
             model = VDenoiser(self.model.diffusion)
         
         with self.offload_context(self.model.diffusion):

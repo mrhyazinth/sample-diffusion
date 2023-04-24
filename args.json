@@ -17,7 +17,7 @@
 
     "mode": "Generation",
 
-    "seed": 1507919390,
+    "seed": -1,
     "batch_size": 4,
 
     "audio_source": null,
