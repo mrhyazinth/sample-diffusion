@@ -10,10 +10,10 @@
     "tame": true,
 
     "model_type": "DD",
-    "model": "models/DD/model.ckpt",
+    "model": "models/DD/jmann-large-580k.ckpt",
 
     "sample_rate": 48000,
-    "chunk_size": 65536,
+    "chunk_size": 131072,
 
     "mode": "Generation",
 

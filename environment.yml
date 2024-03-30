@@ -5,10 +5,10 @@ channels:
   - defaults
 dependencies: 
   - git
-  - python=3.10
-  - pip=22.2.2
-  - pytorch=1.12.1
-  - pytorch-cuda=11.7
+  - python
+  - pip
+  - pytorch
+  - pytorch-cuda
   - torchvision
   - torchaudio
   - setuptools

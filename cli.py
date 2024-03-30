@@ -5,7 +5,6 @@ from util.platform import get_torch_device_type
 from dance_diffusion.api import RequestHandler, Request, Response, RequestType, ModelType
 from diffusion_library.sampler import SamplerType
 from diffusion_library.scheduler import SchedulerType
-from transformers import logging as transformers_logging
 
 def main():
     args = parse_cli_args()
@@ -258,5 +257,4 @@ def parse_cli_args():
     return vars(args)
 
 if __name__ == '__main__':
-    transformers_logging.set_verbosity_error()
     main()
